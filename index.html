@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apple Pay Simulator</title>
+    <title>Apple Pay</title>
     <style>
         * {
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
         body {
-            background-color: rgba(0, 0, 0, 0.6);
+            background-color: rgba(0, 0, 0, 0.65);
             margin: 0;
             padding: 0;
             display: flex;
@@ -19,16 +19,16 @@
             height: 100vh;
             overflow: hidden;
         }
-        /* نافذة أبل باي السفليّة */
+        /* نافذة أبل باي */
         .apple-pay-sheet {
-            background-color: #f2f2f7;
+            background-color: #f1f1f6;
             width: 100%;
-            max-width: 450px;
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
-            padding: 20px 16px 34px 16px;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.3);
-            animation: slideUp 0.3s ease-out;
+            max-width: 440px;
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+            padding: 16px 16px 36px 16px;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.4);
+            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
         @keyframes slideUp {
             from { transform: translateY(100%); }
@@ -38,75 +38,103 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
+            padding: 0 4px;
         }
         .apple-pay-logo {
-            font-size: 22px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            font-size: 21px;
+            font-weight: 600;
+            color: #000;
+            letter-spacing: -0.5px;
         }
         .close-btn {
-            background: #e0e0e6;
+            background: #e1e1e6;
             border: none;
-            width: 30px;
-            height: 30px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            font-size: 16px;
-            font-weight: bold;
+            font-size: 15px;
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #3a3a3c;
+            color: #333;
         }
-        /* خانة البطاقة */
+
+        /* تصميم البطاقة الواقعي (مطابق للأصل) */
         .card-container {
             background: #ffffff;
             border-radius: 12px;
-            padding: 12px 16px;
+            padding: 12px 14px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            margin-bottom: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
         }
         .card-info {
             display: flex;
             align-items: center;
             gap: 12px;
         }
-        .card-icon {
-            width: 45px;
-            height: 28px;
-            background: #111;
-            border-radius: 4px;
+        
+        /* شكل البطاقة البنكية المصغرة الواقعية (مثل e& money أو ADIB) */
+        .real-card-graphic {
+            width: 60px;
+            height: 38px;
+            background: linear-gradient(135deg, #1e1e1e 0%, #3a3a3a 100%);
+            border-radius: 5px;
+            padding: 6px;
             display: flex;
-            justify-content: center;
-            align-items: center;
+            flex-direction: column;
+            justify-content: space-between;
             color: white;
-            font-size: 10px;
-            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
         }
+        /* تعديل لون البطاقة بناءً على اختيارك (مثلاً وردي/أحمر لـ e& أو أزرق لـ ADIB) */
+        .real-card-graphic.e-money {
+            background: linear-gradient(135deg, #e4002b 0%, #900018 100%);
+        }
+        .real-card-graphic.adib {
+            background: linear-gradient(135deg, #003366 0%, #001a33 100%);
+        }
+        
+        .card-chip {
+            width: 12px;
+            height: 9px;
+            background: #d4af37;
+            border-radius: 2px;
+        }
+        .card-brand-text {
+            font-size: 8px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
         .card-details .card-name {
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 600;
             color: #000;
         }
         .card-details .card-number {
-            font-size: 12px;
+            font-size: 13px;
             color: #8e8e93;
+            letter-spacing: 1px;
         }
         .yes-badge {
             background: #ff3b30;
             color: white;
-            font-size: 11px;
-            font-weight: bold;
-            padding: 2px 6px;
-            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
         }
-        /* خيار تغيير البطاقة */
+
+        /* زر تغيير البطاقة */
         .change-card {
             background: #ffffff;
             border-radius: 12px;
@@ -114,141 +142,160 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             font-size: 15px;
             font-weight: 500;
-            cursor: pointer;
+            color: #000;
         }
         .change-card span:last-child {
-            color: #8e8e93;
+            color: #c7c7cc;
+            font-weight: bold;
+            font-size: 18px;
         }
+
         /* تفاصيل المبلغ */
         .payment-summary {
             background: #ffffff;
             border-radius: 12px;
             padding: 16px;
-            margin-bottom: 25px;
+            margin-bottom: 24px;
         }
         .payee-row {
             display: flex;
             justify-content: space-between;
             font-size: 14px;
             color: #8e8e93;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         .amount-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 24px;
-            font-weight: bold;
+            font-size: 26px;
+            font-weight: 700;
             color: #000;
+            letter-spacing: -0.5px;
         }
         .info-icon {
-            width: 22px;
-            height: 22px;
+            width: 20px;
+            height: 20px;
             background: #e5e5ea;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 12px;
+            font-size: 11px;
             color: #8e8e93;
+            font-weight: bold;
         }
-        /* زر الجانب والتشغيل */
+
+        /* زر الجانب */
         .action-area {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
         .side-button-icon {
-            width: 50px;
-            height: 50px;
+            width: 52px;
+            height: 52px;
             border: 3px solid #007aff;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            position: relative;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
         }
         .inner-circle {
-            width: 36px;
-            height: 36px;
+            width: 38px;
+            height: 38px;
             background: #007aff;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
             color: white;
-            font-size: 14px;
+            font-size: 15px;
         }
         .action-text {
             font-size: 13px;
             color: #3a3a3c;
             font-weight: 500;
-            text-align: center;
         }
-        /* لوحة التحكم الجانبية لتعديل المبلغ والبطاقة للتجربة */
+
+        /* لوحة التحكم السرية لتعديل المبلغ والبطاقة مباشرة من الجوال قبل التصوير */
         .control-panel {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            max-width: 280px;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 12px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            display: flex;
+            gap: 10px;
+            z-index: 100;
         }
-        .control-panel label {
-            font-size: 12px;
-            font-weight: bold;
-            display: block;
-            margin-bottom: 5px;
-        }
-        .control-panel input {
-            width: 100%;
-            padding: 6px;
-            margin-bottom: 10px;
+        .control-panel input, .control-panel select {
+            flex: 1;
+            padding: 8px;
             border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+        .toggle-panel {
+            position: absolute;
+            top: 75px;
+            left: 15px;
+            background: #333;
+            color: white;
+            border: none;
+            padding: 5px 10px;
             border-radius: 5px;
+            font-size: 11px;
+            cursor: pointer;
+            z-index: 101;
         }
     </style>
 </head>
 <body>
 
-    <!-- لوحة تحكم صغيرة لتغيير المبلغ المالي والبطاقة بكل إرادة قبل التصوير -->
-    <div class="control-panel">
-        <label>أدخل المبلغ الوهمي (مثال: 833,532.85):</label>
-        <input type="text" id="amountInput" value="833,532.85">
-        <label>اسم البطاقة ورقمها:</label>
-        <input type="text" id="cardNameInput" value="e& money">
-        <input type="text" id="cardNumInput" value="•••• 1234">
+    <button class="toggle-panel" onclick="toggleControlPanel()">إخفاء/إظهار لوحة التحكم</button>
+    <div class="control-panel" id="controlPanel">
+        <input type="text" id="amountInput" value="833,532.85" placeholder="المبلغ">
+        <select id="cardTypeSelect" onchange="updateCardStyle()">
+            <option value="e-money">e& money</option>
+            <option value="adib">ADIB Amwali</option>
+        </select>
+        <input type="text" id="cardNumInput" value="•••• 1782" placeholder="رقم البطاقة">
     </div>
 
-    <!-- واجهة أبل باي الحقيقية -->
     <div class="apple-pay-sheet">
         <div class="header">
-            <div class="apple-pay-logo"> Pay</div>
+            <div class="apple-pay-logo">Pay </div>
             <button class="close-btn" onclick="resetPayment()">✕</button>
         </div>
 
         <div class="card-container">
             <div class="card-info">
-                <div class="card-icon" id="cardBrandDisplay">e&</div>
+                <div class="real-card-graphic e-money" id="cardGraphic">
+                    <div class="card-chip"></div>
+                    <div class="card-brand-text" id="cardBrandText">e&</div>
+                </div>
                 <div class="card-details">
                     <div class="card-name" id="displayCardName">e& money</div>
-                    <div class="card-number" id="displayCardNum">•••• 4321</div>
+                    <div class="card-number" id="displayCardNum">•••• 1782</div>
                 </div>
             </div>
-            <div class="yes-badge">YES !</div>
+            <div class="yes-badge">! YES</div>
         </div>
 
         <div class="change-card">
             <span>Change Payment Method</span>
-            <span> › </span>
+            <span>›</span>
         </div>
 
         <div class="payment-summary">
@@ -270,27 +317,35 @@
     </div>
 
     <script>
-        // ربط عناصر التحكم بتحديث الواجهة فوراً
         const amountInput = document.getElementById('amountInput');
         const displayAmount = document.getElementById('displayAmount');
-        const cardNameInput = document.getElementById('cardNameInput');
-        const displayCardName = document.getElementById('displayCardName');
         const cardNumInput = document.getElementById('cardNumInput');
         const displayCardNum = document.getElementById('displayCardNum');
-        const cardBrandDisplay = document.getElementById('cardBrandDisplay');
+        const cardGraphic = document.getElementById('cardGraphic');
+        const cardBrandText = document.getElementById('cardBrandText');
+        const displayCardName = document.getElementById('displayCardName');
+        const cardTypeSelect = document.getElementById('cardTypeSelect');
 
-        amountInput.addEventListener('input', () => {
-            displayAmount.innerText = amountInput.value;
-        });
-        cardNameInput.addEventListener('input', () => {
-            displayCardName.innerText = cardNameInput.value;
-            cardBrandDisplay.innerText = cardNameInput.value.substring(0, 2).toUpperCase();
-        });
-        cardNumInput.addEventListener('input', () => {
-            displayCardNum.innerText = cardNumInput.value;
-        });
+        amountInput.addEventListener('input', () => { displayAmount.innerText = amountInput.value; });
+        cardNumInput.addEventListener('input', () => { displayCardNum.innerText = cardNumInput.value; });
 
-        // محاكاة عملية الدفع عند الضغط على زر الجانب أو النقر مرتين
+        function updateCardStyle() {
+            if (cardTypeSelect.value === 'e-money') {
+                cardGraphic.className = 'real-card-graphic e-money';
+                cardBrandText.innerText = 'e&';
+                displayCardName.innerText = 'e& money';
+            } else {
+                cardGraphic.className = 'real-card-graphic adib';
+                cardBrandText.innerText = 'ADIB';
+                displayCardName.innerText = 'ADIB Amwali';
+            }
+        }
+
+        function toggleControlPanel() {
+            const panel = document.getElementById('controlPanel');
+            panel.style.display = panel.style.display === 'none' ? 'flex' : 'none';
+        }
+
         let clickCount = 0;
         function triggerPayment() {
             clickCount++;
@@ -300,15 +355,13 @@
 
             if (clickCount === 1) {
                 actionText.innerText = "Double Click Side Button";
-                setTimeout(() => { clickCount = 0; }, 1000); // إعادة تعيين لو تأخر النقر الثاني
+                setTimeout(() => { clickCount = 0; }, 1200);
             } else if (clickCount === 2) {
-                // بدء المعالجة
-                actionText.innerText = "Processing...";
+                actionText.innerText = "Processing Payment";
                 innerIcon.innerText = "⏳";
                 payButton.style.borderColor = "#8e8e93";
 
                 setTimeout(() => {
-                    // نجاح العملية وعلامة الصح
                     actionText.innerText = "Done";
                     innerIcon.innerText = "✓";
                     payButton.style.borderColor = "#34c759";
