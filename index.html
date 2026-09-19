@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apple Pay Simulator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        body {
+            background-color: rgba(0, 0, 0, 0.6);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            height: 100vh;
+            overflow: hidden;
+        }
+        /* نافذة أبل باي السفليّة */
+        .apple-pay-sheet {
+            background-color: #f2f2f7;
+            width: 100%;
+            max-width: 450px;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            padding: 20px 16px 34px 16px;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .apple-pay-logo {
+            font-size: 22px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .close-btn {
+            background: #e0e0e6;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #3a3a3c;
+        }
+        /* خانة البطاقة */
+        .card-container {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .card-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .card-icon {
+            width: 45px;
+            height: 28px;
+            background: #111;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        .card-details .card-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #000;
+        }
+        .card-details .card-number {
+            font-size: 12px;
+            color: #8e8e93;
+        }
+        .yes-badge {
+            background: #ff3b30;
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        /* خيار تغيير البطاقة */
+        .change-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .change-card span:last-child {
+            color: #8e8e93;
+        }
+        /* تفاصيل المبلغ */
+        .payment-summary {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 25px;
+        }
+        .payee-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #8e8e93;
+            margin-bottom: 8px;
+        }
+        .amount-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #000;
+        }
+        .info-icon {
+            width: 22px;
+            height: 22px;
+            background: #e5e5ea;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            color: #8e8e93;
+        }
+        /* زر الجانب والتشغيل */
+        .action-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .side-button-icon {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #007aff;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+        }
+        .inner-circle {
+            width: 36px;
+            height: 36px;
+            background: #007aff;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 14px;
+        }
+        .action-text {
+            font-size: 13px;
+            color: #3a3a3c;
+            font-weight: 500;
+            text-align: center;
+        }
+        /* لوحة التحكم الجانبية لتعديل المبلغ والبطاقة للتجربة */
+        .control-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            max-width: 280px;
+        }
+        .control-panel label {
+            font-size: 12px;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .control-panel input {
+            width: 100%;
+            padding: 6px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- لوحة تحكم صغيرة لتغيير المبلغ المالي والبطاقة بكل إرادة قبل التصوير -->
+    <div class="control-panel">
+        <label>أدخل المبلغ الوهمي (مثال: 833,532.85):</label>
+        <input type="text" id="amountInput" value="833,532.85">
+        <label>اسم البطاقة ورقمها:</label>
+        <input type="text" id="cardNameInput" value="e& money">
+        <input type="text" id="cardNumInput" value="•••• 1234">
+    </div>
+
+    <!-- واجهة أبل باي الحقيقية -->
+    <div class="apple-pay-sheet">
+        <div class="header">
+            <div class="apple-pay-logo"> Pay</div>
+            <button class="close-btn" onclick="resetPayment()">✕</button>
+        </div>
+
+        <div class="card-container">
+            <div class="card-info">
+                <div class="card-icon" id="cardBrandDisplay">e&</div>
+                <div class="card-details">
+                    <div class="card-name" id="displayCardName">e& money</div>
+                    <div class="card-number" id="displayCardNum">•••• 4321</div>
+                </div>
+            </div>
+            <div class="yes-badge">YES !</div>
+        </div>
+
+        <div class="change-card">
+            <span>Change Payment Method</span>
+            <span> › </span>
+        </div>
+
+        <div class="payment-summary">
+            <div class="payee-row">
+                <span>Pay Noon</span>
+                <span class="info-icon">i</span>
+            </div>
+            <div class="amount-row">
+                <span>AED <span id="displayAmount">833,532.85</span></span>
+            </div>
+        </div>
+
+        <div class="action-area">
+            <div class="side-button-icon" id="payButton" onclick="triggerPayment()">
+                <div class="inner-circle" id="innerIcon">🔲</div>
+            </div>
+            <div class="action-text" id="actionText">Confirm with Side Button</div>
+        </div>
+    </div>
+
+    <script>
+        // ربط عناصر التحكم بتحديث الواجهة فوراً
+        const amountInput = document.getElementById('amountInput');
+        const displayAmount = document.getElementById('displayAmount');
+        const cardNameInput = document.getElementById('cardNameInput');
+        const displayCardName = document.getElementById('displayCardName');
+        const cardNumInput = document.getElementById('cardNumInput');
+        const displayCardNum = document.getElementById('displayCardNum');
+        const cardBrandDisplay = document.getElementById('cardBrandDisplay');
+
+        amountInput.addEventListener('input', () => {
+            displayAmount.innerText = amountInput.value;
+        });
+        cardNameInput.addEventListener('input', () => {
+            displayCardName.innerText = cardNameInput.value;
+            cardBrandDisplay.innerText = cardNameInput.value.substring(0, 2).toUpperCase();
+        });
+        cardNumInput.addEventListener('input', () => {
+            displayCardNum.innerText = cardNumInput.value;
+        });
+
+        // محاكاة عملية الدفع عند الضغط على زر الجانب أو النقر مرتين
+        let clickCount = 0;
+        function triggerPayment() {
+            clickCount++;
+            const actionText = document.getElementById('actionText');
+            const innerIcon = document.getElementById('innerIcon');
+            const payButton = document.getElementById('payButton');
+
+            if (clickCount === 1) {
+                actionText.innerText = "Double Click Side Button";
+                setTimeout(() => { clickCount = 0; }, 1000); // إعادة تعيين لو تأخر النقر الثاني
+            } else if (clickCount === 2) {
+                // بدء المعالجة
+                actionText.innerText = "Processing...";
+                innerIcon.innerText = "⏳";
+                payButton.style.borderColor = "#8e8e93";
+
+                setTimeout(() => {
+                    // نجاح العملية وعلامة الصح
+                    actionText.innerText = "Done";
+                    innerIcon.innerText = "✓";
+                    payButton.style.borderColor = "#34c759";
+                    innerIcon.style.background = "#34c759";
+                }, 1500);
+            }
+        }
+
+        function resetPayment() {
+            clickCount = 0;
+            document.getElementById('actionText').innerText = "Confirm with Side Button";
+            document.getElementById('innerIcon').innerText = "🔲";
+            document.getElementById('innerIcon').style.background = "#007aff";
+            document.getElementById('payButton').style.borderColor = "#007aff";
+        }
+    </script>
+</body>
+</html>
